@@ -33,7 +33,9 @@ pipeline {
 
         stage('Deploy to Production') {
             // 只有當分支是 main 時才執行此階段
-            when { branch 'main' }
+            when { 
+                expression { return env.GIT_BRANCH == 'main' || env.GIT_BRANCH == 'origin/main' || env.GIT_BRANCH == 'master' || env.GIT_BRANCH == 'origin/master' }
+            }
             steps {
                 input message: "確認要發布到正式環境？"
                 echo "正在部署到正式環境..."
