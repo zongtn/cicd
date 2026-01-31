@@ -19,7 +19,6 @@ pipeline {
                         -Dsonar.host.url=http://172.16.1.69:9000 \
                         -Dsonar.login=${SONAR_AUTH_TOKEN}"
                     }
-                    }
                 }
             }
         }
