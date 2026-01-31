@@ -13,7 +13,7 @@ pipeline {
             steps {
                 script {
                     // 1. 取得剛剛在 Tools 設定的工具路徑
-                    def scannerHome = tool 'sonar-scanner-tool'
+                    def scannerHome = tool 'sonar-scanner'
                     
                     // 2. 使用環境變數注入，不要把 Token 寫死在代碼中
                     withSonarQubeEnv('sonarqube') { 
