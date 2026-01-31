@@ -33,12 +33,7 @@ pipeline {
 
         stage('Deploy to Production') {
             // 只有當分支是 main 時才執行此階段
-            when { 
-                allOf {
-                    branch 'main'
-                    // 甚至可以要求必須有人點擊確認
-                }
-            }
+            when { branch 'main' }
             steps {
                 input message: "確認要發布到正式環境？"
                 echo "正在部署到正式環境..."
