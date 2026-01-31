@@ -11,20 +11,20 @@ pipeline {
         
         stage('SonarQube Analysis') {
             steps {
-                // 'sonarqube' 必須對應你 image_053656.png 裡的 Name 欄位
-                withSonarQubeEnv('sonarqube') {
-                    // 如果你沒安裝 scanner 插件到環境變數，可以使用 tool 語法
-                    // sh 'sonar-scanner -Dsonar.projectKey=cicd-test'
+                script {
+                    // 1. 取得剛剛在 Tools 設定的工具路徑
+                    def scannerHome = tool 'sonar-scanner-tool'
                     
-                    // 這是最通用的掃描指令
-                    // 專案 Key 必須對應你在 SonarQube 建立的名稱 (cicd-test)
-                    sh """
-                        sonar-scanner \
+                    // 2. 使用環境變數注入，不要把 Token 寫死在代碼中
+                    withSonarQubeEnv('sonarqube') { 
+                        // 注意：如果 Jenkins 跑在 Docker 裡，localhost 會指向 Jenkins 自己。
+                        // 請將下面的 IP 改為你機器的真實內網 IP (例如 192.168.x.x)
+                        sh "${scannerHome}/bin/sonar-scanner \
                         -Dsonar.projectKey=cicd-test \
                         -Dsonar.sources=. \
-                        -Dsonar.host.url=${SONAR_HOST_URL} \
-                        -Dsonar.login=${SONAR_AUTH_TOKEN}
-                    """
+                        -Dsonar.host.url=http://你的伺服器真實IP:9000 \
+                        -Dsonar.login=${SONAR_AUTH_TOKEN}"
+                    }
                 }
             }
         }
