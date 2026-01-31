@@ -9,6 +9,7 @@ pipeline {
             }
         }
         
+        // SonarQube 掃描
         stage('SonarQube Analysis') {
             steps {
                 script {
