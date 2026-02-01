@@ -3,12 +3,13 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 WORKDIR /app
 
 # 複製 csproj 並進行還原 (Restore)，利用 Docker 層快取優化速度
-COPY *.csproj ./
+COPY *.sln ./
+COPY cicd/*.csproj ./cicd/
 RUN dotnet restore
 
 # 複製其餘所有原始碼並編譯
 COPY . ./
-RUN dotnet publish -c Release -o out
+RUN dotnet publish cicd/cicd.csproj -c Release -o out
 
 # --- 第二階段：執行 (Runtime Stage) ---
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
