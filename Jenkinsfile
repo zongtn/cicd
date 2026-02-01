@@ -65,6 +65,12 @@ pipeline {
             steps {
                 input message: "確認要發布到正式環境？"
                 echo "正在部署到正式環境..."
+                script {
+                    // 強制重啟該名稱的容器，它會自動去拉取 Harbor 最新的 latest 鏡像
+                    sh "docker stop cicd-api || true"
+                    sh "docker rm cicd-api || true"
+                    sh "docker run -d --name cicd-api -p 8081:80 harbor-stage.com:8080/test/cicd-api:latest"
+                }
             }
         }
     }
