@@ -69,7 +69,7 @@ pipeline {
                     // 強制重啟該名稱的容器，它會自動去拉取 Harbor 最新的 latest 鏡像
                     sh "docker stop cicd-api || true"
                     sh "docker rm cicd-api || true"
-                    sh "docker run -d --name cicd-api -p 8081:80 harbor-stage.com:8080/test/cicd-api:latest"
+                    sh "docker run -d --name cicd-api -p 8081:80 -e ASPNETCORE_ENVIRONMENT=Development harbor-stage.com:8080/test/cicd-api:latest"
                 }
             }
         }
