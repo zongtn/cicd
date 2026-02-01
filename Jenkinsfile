@@ -28,10 +28,14 @@ pipeline {
                 script {
                     // 定義鏡像名稱（請換成你的 Harbor 位址與專案名）
                     def remoteImage = "harbor-stage.com:8080/test/cicd-api:${env.BUILD_NUMBER}"
-            
-                    // 1. 使用 Harbor 憑據登入
-                    withCredentials([usernamePassword(credentialsId: 'harbor-creds', passwordVariable: 'HB_PWD', usernameVariable: 'HB_USER')]) {
-                        sh "docker login harbor-stage.com:8080 -u ${HB_USER} -p ${HB_PWD}"
+
+                    // 1. 使用單引號避免資安警告，並使用 --password-stdin 確保安全
+                    withCredentials([usernamePassword(credentialsId: 'harbor-creds', 
+                                                      passwordVariable: 'HB_PWD', 
+                                                      usernameVariable: 'HB_USER')]) {
+                        // 注意這裡 sh 後面改用單引號 ''
+                        // $HB_USER 和 $HB_PWD 會由 Jenkins 的環境變數安全地帶入
+                        sh 'echo $HB_PWD | docker login harbor-stage.com:8080 -u $HB_USER --password-stdin'
                     }
             
                     // 2. 建置 Image
