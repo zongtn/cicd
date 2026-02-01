@@ -26,26 +26,24 @@ pipeline {
         stage('Build & Push to Harbor') {
             steps {
                 script {
-                    // 定義鏡像名稱（請換成你的 Harbor 位址與專案名）
-                    def remoteImage = "harbor-stage.com:8080/test/cicd-api:${env.BUILD_NUMBER}"
+                    def harborUrl = "harbor-stage.com:8080"
+                    def imageName = "${harborUrl}/test/cicd-api"
+                    def tagImage = "${imageName}:${env.BUILD_NUMBER}"
+                    def latestImage = "${imageName}:latest" // 新增 latest 變數
 
-                    // 1. 使用單引號避免資安警告，並使用 --password-stdin 確保安全
-                    withCredentials([usernamePassword(credentialsId: 'harbor-creds', 
-                                                      passwordVariable: 'HB_PWD', 
-                                                      usernameVariable: 'HB_USER')]) {
-                        // 注意這裡 sh 後面改用單引號 ''
-                        // $HB_USER 和 $HB_PWD 會由 Jenkins 的環境變數安全地帶入
-                        sh 'echo $HB_PWD | docker login harbor-stage.com:8080 -u $HB_USER --password-stdin'
+                    withCredentials([usernamePassword(credentialsId: 'harbor-creds', passwordVariable: 'HB_PWD', usernameVariable: 'HB_USER')]) {
+                        sh "echo ${HB_PWD} | docker login ${harborUrl} -u ${HB_USER} --password-stdin"
+                
+                        // 1. 編譯並貼上兩個標籤
+                        sh "docker build -t ${tagImage} -t ${latestImage} ."
+                
+                        // 2. 推送兩個標籤到 Harbor
+                        sh "docker push ${tagImage}"
+                        sh "docker push ${latestImage}"
+                
+                        // 3. 清理本地鏡像
+                        sh "docker rmi ${tagImage} ${latestImage}"
                     }
-            
-                    // 2. 建置 Image
-                    sh "docker build -t ${remoteImage} ."
-            
-                    // 3. 推送到 Harbor
-                    sh "docker push ${remoteImage}"
-            
-                    // 4. 清理本地 Image (避免硬碟爆滿)
-                    sh "docker rmi ${remoteImage}"
                 }
             }
         }
