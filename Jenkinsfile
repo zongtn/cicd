@@ -23,6 +23,30 @@ pipeline {
             }
         }
 
+        stage('Build & Push to Harbor') {
+            steps {
+                script {
+                    // 定義鏡像名稱（請換成你的 Harbor 位址與專案名）
+                    def remoteImage = "harbor-stage.com:8080/test/cicd-api:${env.BUILD_NUMBER}"
+            
+                    // 1. 使用 Harbor 憑據登入
+                    withCredentials([usernamePassword(credentialsId: 'harbor-creds', passwordVariable: 'User_001', usernameVariable: 'user001')]) {
+                        sh "docker login harbor-stage.com:8080 -u ${HB_USER} -p ${HB_PWD}"
+                    }
+            
+                    // 2. 建置 Image
+                    sh "docker build -t ${remoteImage} ."
+            
+                    // 3. 推送到 Harbor
+                    sh "docker push ${remoteImage}"
+            
+                    // 4. 清理本地 Image (避免硬碟爆滿)
+                    sh "docker rmi ${remoteImage}"
+                }
+            }
+        }
+
+
         stage('Deploy to Dev') {
             // 只有當分支是 develop 時才執行此階段
             when { branch 'develop' } 
