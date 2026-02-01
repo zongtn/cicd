@@ -30,7 +30,7 @@ namespace cicd.Controllers
             .ToArray();
         }
 
-        [HttpGet(Name = "GetWeatherForecast2")]
+        [HttpGet("v2", Name = "GetWeatherForecast2")]
         public IEnumerable<WeatherForecast> Get2()
         {
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
