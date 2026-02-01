@@ -51,7 +51,9 @@ pipeline {
 
         stage('Deploy to Dev') {
             // 只有當分支是 develop 時才執行此階段
-            when { branch 'develop' } 
+            when { 
+                expression { return env.GIT_BRANCH == 'develop' || env.GIT_BRANCH == 'origin/develop'}
+            }
             steps {
                 echo "正在部署到開發環境..."
                 script {
