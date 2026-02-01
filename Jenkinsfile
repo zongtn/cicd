@@ -54,6 +54,12 @@ pipeline {
             when { branch 'develop' } 
             steps {
                 echo "正在部署到開發環境..."
+                script {
+                    // 強制重啟該名稱的容器，它會自動去拉取 Harbor 最新的 latest 鏡像
+                    sh "docker stop cicd-api-dev || true"
+                    sh "docker rm cicd-api-dev || true"
+                    sh "docker run -d --name cicd-api-dev -p 8082:80 -e ASPNETCORE_ENVIRONMENT=Development harbor-stage.com:8080/test/cicd-api:latest"
+                }
             }
         }
 
@@ -67,9 +73,9 @@ pipeline {
                 echo "正在部署到正式環境..."
                 script {
                     // 強制重啟該名稱的容器，它會自動去拉取 Harbor 最新的 latest 鏡像
-                    sh "docker stop cicd-api || true"
-                    sh "docker rm cicd-api || true"
-                    sh "docker run -d --name cicd-api -p 8081:80 -e ASPNETCORE_ENVIRONMENT=Development harbor-stage.com:8080/test/cicd-api:latest"
+                    sh "docker stop cicd-api-prod || true"
+                    sh "docker rm cicd-api-prod || true"
+                    sh "docker run -d --name cicd-api-prod -p 8081:80 harbor-stage.com:8080/test/cicd-api:latest"
                 }
             }
         }
