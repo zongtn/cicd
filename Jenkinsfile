@@ -30,7 +30,7 @@ pipeline {
                     def remoteImage = "harbor-stage.com:8080/test/cicd-api:${env.BUILD_NUMBER}"
             
                     // 1. 使用 Harbor 憑據登入
-                    withCredentials([usernamePassword(credentialsId: 'harbor-creds', passwordVariable: 'User_001', usernameVariable: 'user001')]) {
+                    withCredentials([usernamePassword(credentialsId: 'harbor-creds', passwordVariable: 'HB_PWD', usernameVariable: 'HB_USER')]) {
                         sh "docker login harbor-stage.com:8080 -u ${HB_USER} -p ${HB_PWD}"
                     }
             
