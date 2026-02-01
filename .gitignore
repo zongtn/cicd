@@ -5,3 +5,9 @@
 /cicd/cicd/obj/Release/net8.0
 /cicd/cicd/obj
 /cicd/.vs
+/.vs/cicd
+/.vs/t/v17
+/.vs/slnx.sqlite
+/.vs/VSWorkspaceState.json
+/cicd/bin/Debug/net8.0
+/cicd/obj

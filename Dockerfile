@@ -2,14 +2,13 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 WORKDIR /app
 
-# 複製 csproj 並進行還原 (Restore)，利用 Docker 層快取優化速度
-COPY *.sln ./
-COPY cicd/*.csproj ./cicd/
+# 先複製全部內容，確保連同子資料夾的專案檔都進去
+COPY . .
+
+# 如果你的 .sln 在根目錄，這樣跑絕對沒問題
 RUN dotnet restore
 
-# 複製其餘所有原始碼並編譯
-COPY . ./
-RUN dotnet publish cicd/cicd.csproj -c Release -o out
+RUN dotnet publish -c Release -o out
 
 # --- 第二階段：執行 (Runtime Stage) ---
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
